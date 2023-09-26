@@ -33,7 +33,6 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Обрабатываем корневой путь */}
         <Route
           path="/"
           element={

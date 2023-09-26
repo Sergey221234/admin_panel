@@ -4,7 +4,7 @@ import { updateSections } from '../../redux/sidebarSlice'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 
-const Sidebar = () => {
+const Sidebar = ({ handleLogout }) => {
   const sections = useSelector((state) => state.sidebar.sections)
   const dispatch = useDispatch()
 
@@ -29,7 +29,7 @@ const Sidebar = () => {
   return (
     <div className="w-1/4 bg-gray-200 p-4">
       {/* Отобразите список секций */}
-      <h2 className="text-xl font-semibold mb-4">Sections</h2>
+      <h2 className="text-xl font-semibold mb-4">Rules</h2>
       <ul>
         {sections.map((section) => (
           <li
@@ -44,7 +44,7 @@ const Sidebar = () => {
             to="/dashboard/new"
             className="bg-blue-500 text-white px-2 py-1 rounded mt-4 hover:bg-blue-600"
           >
-            Create New Section
+            Create New Rule
           </Link>
         </li>
       </ul>
