@@ -10,7 +10,7 @@ const Section = () => {
       <Routes>
         <Route
           path="/"
-          element={<p>Select a rule from the sidebar or create a new one.</p>}
+          element={<h1>Select a rule from the sidebar or create a new one.</h1>}
         />
         <Route path="/:sectionId" element={<SectionEditor />} />
         <Route path="/dashboard/new" element={<SectionEditor />} />
