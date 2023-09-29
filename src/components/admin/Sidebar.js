@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { updateSections } from '../../redux/sidebarSlice'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import '../../../src/index.css'
 
 const Sidebar = ({ handleLogout }) => {
   const sections = useSelector((state) => state.sidebar.sections)
@@ -27,7 +28,7 @@ const Sidebar = ({ handleLogout }) => {
   }, [dispatch])
 
   return (
-    <div className="w-1/4 bg-gray-200 p-4">
+    <div className="w-1/4 bg-gray-200 p-4 sidebar">
       {/* Отобразите список секций */}
       <h2 className="text-xl font-semibold mb-4">Rules</h2>
       <ul>

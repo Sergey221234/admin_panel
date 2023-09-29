@@ -6,6 +6,8 @@ import { parseISO } from 'date-fns'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { updateSections } from '../../redux/sidebarSlice'
+import '../../../src/index.css'
+import { FaTrash } from 'react-icons/fa'
 
 const SectionEditor = () => {
   const { sectionId } = useParams()
@@ -16,17 +18,77 @@ const SectionEditor = () => {
   const [editedSection, setEditedSection] = useState(null)
   const [isNewSection, setIsNewSection] = useState(false)
 
+  const [selectedOptions, setSelectedOptions] = useState([])
+  const [selectedOption, setSelectedOption] = useState('')
+
+  const [selectedMetrics, setSelectedMetrics] = useState([])
+  const [selectedMetric, setSelectedMetric] = useState('')
+
+  const [selectedFilterName, setSelectedFilterName] = useState('')
+  const [filterOperator, setFilterOperator] = useState('')
+  const [filterValue, setFilterValue] = useState('')
+
+  const filterNameOptions = ['trackingField4']
+  const operatorOptions = ['=', '>', '<', '>=', '<=', 'in', 'like']
+
+  const handleAddOption = () => {
+    if (selectedOption && !selectedOptions.includes(selectedOption)) {
+      setSelectedOptions([...selectedOptions, selectedOption])
+      setSelectedOption('')
+    }
+  }
+
+  const handleRemoveOption = (optionToRemove) => {
+    const updatedOptions = selectedOptions.filter(
+      (option) => option !== optionToRemove
+    )
+    setSelectedOptions(updatedOptions)
+  }
+
+  const handleAddMetric = () => {
+    if (selectedMetric && !selectedMetrics.includes(selectedMetric)) {
+      setSelectedMetrics([...selectedMetrics, selectedMetric])
+      setSelectedMetric('')
+    }
+  }
+
+  const handleRemoveMetric = (optionToRemove) => {
+    const updatedMetrics = selectedMetrics.filter(
+      (option) => option !== optionToRemove
+    )
+    setSelectedMetrics(updatedMetrics)
+  }
+
+  const handleAddMetricsFilter = () => {
+    if (selectedFilterName && filterOperator && filterValue) {
+      const newFilter = {
+        filterName: selectedFilterName,
+        filterOperator: filterOperator,
+        filterValue: filterValue,
+      }
+      setEditedSection((prevSection) => ({
+        ...prevSection,
+        metricsFilters: [...prevSection.metricsFilters, newFilter],
+      }))
+      setSelectedFilterName('')
+      setFilterOperator('')
+      setFilterValue('')
+    }
+  }
+
   useEffect(() => {
     if (sectionId === 'new') {
       setIsNewSection(true)
       setEditedSection({
         title: '',
-        campaignId: '',
         telegramId: '',
         startDate: null,
         endDate: null,
-        groupBy: '',
+        sortBy: '',
+        metricsFilters: [],
       })
+      setSelectedOptions([])
+      setSelectedMetrics([])
     } else {
       axios
         .get(`http://localhost:4001/sections/${sectionId}`, {
@@ -39,6 +101,9 @@ const SectionEditor = () => {
           setSelectedSection(sectionData)
           setEditedSection(sectionData)
           setIsNewSection(false)
+          console.log('Полученные опции из бэкенда:', sectionData)
+          setSelectedOptions(sectionData.groupByOptions || [])
+          setSelectedMetrics(sectionData.metrics || [])
         })
         .catch((error) => {
           console.error('Ошибка при загрузке секции', error)
@@ -47,11 +112,6 @@ const SectionEditor = () => {
   }, [sectionId])
 
   const handleFieldChange = (field, value) => {
-    let updatedValue = value
-    if (field === 'groupBy') {
-      updatedValue = value.split(',')
-      console.log(updatedValue)
-    }
     const updatedSection = { ...editedSection, [field]: value }
     setEditedSection(updatedSection)
   }
@@ -62,10 +122,13 @@ const SectionEditor = () => {
       editedSection.title &&
       editedSection.startDate &&
       editedSection.endDate &&
-      editedSection.groupBy &&
-      editedSection.campaignId &&
+      // editedSection.groupBy &&
+      // editedSection.metrics &&
+      editedSection.sortBy &&
       editedSection.telegramId
     ) {
+      editedSection.groupByOptions = selectedOptions
+      editedSection.metrics = selectedMetrics
       if (isNewSection) {
         const formattedStartDate = editedSection.startDate.toISOString()
         const formattedEndDate = editedSection.endDate.toISOString()
@@ -142,7 +205,7 @@ const SectionEditor = () => {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full section-editor-container">
       <h1>Rule Editor</h1>
       {selectedSection || isNewSection ? (
         <div>
@@ -192,34 +255,175 @@ const SectionEditor = () => {
               )}
             </div>
           </div>
+          <div className="gradient-box">
+            <div className="mb-4 gradient-box">
+              <label className="block mb-1 font-bold">
+                Select GroupBy Metrics:
+              </label>
+              <select
+                className="select-input"
+                value={selectedOption}
+                onChange={(e) => setSelectedOption(e.target.value)}
+              >
+                <option className="option-item" value="">
+                  Select an metric (Array of metrics available to group report
+                  data. MIN: 1 metric, MAX: 10 metrics)
+                </option>
+                <option className="option-item" value="trackingField4">
+                  campaignId
+                </option>
+                <option className="option-item" value="clickID">
+                  clickID
+                </option>
+              </select>
+              <button className="add-button" onClick={handleAddOption}>
+                Add
+              </button>
+            </div>
+            <div>
+              <h2 className="font-bold">Selected GroupBy Metrics:</h2>
+              <ul className="options-list">
+                {selectedOptions.map((option, index) => (
+                  <li className="option-item" key={index}>
+                    {option}{' '}
+                    <button
+                      className="remove-button"
+                      onClick={() => handleRemoveOption(option)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="gradient-box2 mt-2">
+            <div className="mb-4">
+              <label className="block mb-1 font-bold">Select Metrics:</label>
+              <select
+                className="select-input"
+                value={selectedMetric}
+                onChange={(e) => setSelectedMetric(e.target.value)}
+              >
+                <option className="option-item" value="">
+                  Select metrics (Array of column names that will be generated
+                  in the report. MIN: 3 metrics)
+                </option>
+                <option className="option-item" value="trackingField4">
+                  campaignId
+                </option>
+                <option className="option-item" value="clickID">
+                  clickID
+                </option>
+                <option className="option-item" value="visits">
+                  visits
+                </option>
+              </select>
+              <button className="add-button" onClick={handleAddMetric}>
+                Add
+              </button>
+            </div>
+            <div>
+              <h2 className="font-bold">Selected Metrics:</h2>
+              <ul className="options-list">
+                {selectedMetrics.map((option, index) => (
+                  <li className="option-item" key={index}>
+                    {option}{' '}
+                    <button
+                      className="remove-button"
+                      onClick={() => handleRemoveMetric(option)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
           <div className="mb-4">
-            <label className="block mb-1">groupBy:</label>
+            <label className="block mb-1">sortBy:</label>
             <input
-              value={editedSection.groupBy}
-              onChange={(e) => handleFieldChange('groupBy', e.target.value)}
+              value={editedSection.sortBy}
+              onChange={(e) => handleFieldChange('sortBy', e.target.value)}
               type="text"
               className="w-full p-2 border border-gray-300 rounded-md"
               required
-              placeholder="Array of metrics available to group report data. MIN: 1 metric, MAX: 10 metrics"
+              placeholder="Name of the metric you want to sort by your data. NOTE: Column selected to sort should be inside metrics"
             />
-            {!editedSection.groupBy && (
-              <p className="text-red-500">Поле groupBy не может быть пустым</p>
+            {!editedSection.sortBy && (
+              <p className="text-red-500">Поле sortBy не может быть пустым</p>
             )}
           </div>
-          <div className="mb-4">
-            <label className="block mb-1">campaignId:</label>
-            <input
-              value={editedSection.campaignId}
-              onChange={(e) => handleFieldChange('campaignId', e.target.value)}
-              type="text"
-              className="w-full p-2 border border-gray-300 rounded-md"
-              required
-            />
-            {!editedSection.campaignId && (
-              <p className="text-red-500">
-                Поле campaignId не может быть пустым
-              </p>
-            )}
+          <div className="gradient-box">
+            <h2 className="font-bold">Select Metrics Filters:</h2>
+            <span>MIN: 1 metric</span>
+            <div className="mb-4">
+              <label className="block mb-1">Filter Name:</label>
+              <select
+                className="select-input"
+                value={selectedFilterName}
+                onChange={(e) => setSelectedFilterName(e.target.value)}
+              >
+                <option value="">Select a filter name</option>
+                {filterNameOptions.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-1">Operator:</label>
+              <select
+                className="select-input"
+                value={filterOperator}
+                onChange={(e) => setFilterOperator(e.target.value)}
+              >
+                <option value="">Select an operator</option>
+                {operatorOptions.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-1">Filter Value:</label>
+              <input
+                type="text"
+                value={filterValue}
+                onChange={(e) => setFilterValue(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md"
+              />
+            </div>
+            <button className="add-button" onClick={handleAddMetricsFilter}>
+              Add Filter
+            </button>
+            <h2 className="font-bold">Selected Metrics Filters:</h2>
+            <ul className="options-list">
+              {editedSection.metricsFilters.map((filter, index) => (
+                <li className="option-item" key={index}>
+                  {filter.filterName} {filter.filterOperator}{' '}
+                  {filter.filterValue}{' '}
+                  <button
+                    className="remove-button"
+                    onClick={() => {
+                      const updatedFilters =
+                        editedSection.metricsFilters.filter(
+                          (_, i) => i !== index
+                        )
+                      setEditedSection((prevSection) => ({
+                        ...prevSection,
+                        metricsFilters: updatedFilters,
+                      }))
+                    }}
+                  >
+                    <FaTrash />
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="mb-4">
             <label className="block mb-1">telegramId:</label>
