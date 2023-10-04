@@ -3,10 +3,10 @@ import { Routes, Route } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import SectionEditor from './SectionEditor'
 
-const Section = () => {
+const Section = ({ handleLogout }) => {
   return (
     <div className="flex">
-      <Sidebar />
+      <Sidebar handleLogout={handleLogout} />
       <Routes>
         <Route
           path="/"

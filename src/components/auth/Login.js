@@ -32,7 +32,6 @@ const Login = ({ setIsAuthenticated }) => {
         }
       )
 
-      console.log('Успешный вход:', response.data)
       setIsAuthenticated(true)
       localStorage.setItem('isAuthenticated', 'true')
       navigate('/dashboard')
