@@ -449,18 +449,24 @@ const SectionEditor = () => {
             </button>
             <h2 className="font-bold">Selected Metrics Filters:</h2>
             <ul className="options-list">
-              {editedSection.metricsFilters.map((filter, index) => (
-                <li className="option-item" key={index}>
-                  {filter.filterName} {filter.filterOperator}{' '}
-                  {filter.filterValue}{' '}
-                  <button
-                    className="remove-button"
-                    onClick={() => handleRemoveMetricsFilter(index)}
-                  >
-                    <FaTrash />
-                  </button>
-                </li>
-              ))}
+              {editedSection.metricsFilters.map((filter, index) => {
+                const selectedFilterLabel = filterNameOptions.find(
+                  (option) => option.value === filter.filterName
+                )?.label
+
+                return (
+                  <li className="option-item" key={index}>
+                    {selectedFilterLabel || filter.filterName}{' '}
+                    {filter.filterOperator} {filter.filterValue}{' '}
+                    <button
+                      className="remove-button"
+                      onClick={() => handleRemoveMetricsFilter(index)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </li>
+                )
+              })}
             </ul>
           </div>
           <div className="mb-4">
