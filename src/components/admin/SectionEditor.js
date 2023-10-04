@@ -131,6 +131,7 @@ const SectionEditor = () => {
       })
       setSelectedOptions([])
       setSelectedMetrics([])
+      setNotificationInterval('')
     } else {
       axios
         .get(`http://localhost:4001/sections/${sectionId}`, {
