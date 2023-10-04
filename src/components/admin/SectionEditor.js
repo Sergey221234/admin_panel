@@ -28,7 +28,24 @@ const SectionEditor = () => {
   const [filterOperator, setFilterOperator] = useState('')
   const [filterValue, setFilterValue] = useState('')
 
-  const filterNameOptions = ['trackingField4']
+  const [notificationInterval, setNotificationInterval] = useState(1)
+
+  const groupByOptions = [
+    { label: 'campaignId', value: 'trackingField4' },
+    { label: 'clickId', value: 'clickID' },
+  ]
+
+  const metricOptions = [
+    { label: 'campaignId', value: 'trackingField4' },
+    { label: 'clickId', value: 'clickID' },
+    { label: 'visits', value: 'visits' },
+  ]
+
+  const filterNameOptions = [
+    { label: 'campaignId', value: 'trackingField4' },
+    { label: 'visits', value: 'visits' },
+  ]
+
   const operatorOptions = ['=', '>', '<', '>=', '<=', 'in', 'like']
 
   const handleAddOption = () => {
@@ -61,19 +78,44 @@ const SectionEditor = () => {
 
   const handleAddMetricsFilter = () => {
     if (selectedFilterName && filterOperator && filterValue) {
-      const newFilter = {
-        filterName: selectedFilterName,
-        filterOperator: filterOperator,
-        filterValue: filterValue,
+      const selectedFilter = filterNameOptions.find(
+        (option) => option.label === selectedFilterName
+      )
+
+      let parsedFilterValue = filterValue
+      if (selectedFilterName === 'visits') {
+        parsedFilterValue = parseInt(filterValue, 10)
       }
+
+      const newFilter = {
+        filterName: selectedFilter ? selectedFilter.value : selectedFilterName,
+        filterOperator: filterOperator,
+        filterValue: parsedFilterValue,
+      }
+
       setEditedSection((prevSection) => ({
         ...prevSection,
-        metricsFilters: [...prevSection.metricsFilters, newFilter],
+        metricsFilters: [...editedSection.metricsFilters, newFilter],
       }))
+
       setSelectedFilterName('')
       setFilterOperator('')
       setFilterValue('')
     }
+  }
+
+  const handleRemoveMetricsFilter = (index) => {
+    // Создаем копию текущего массива metricsFilters
+    const updatedFilters = [...editedSection.metricsFilters]
+
+    // Удаляем выбранный фильтр по индексу
+    updatedFilters.splice(index, 1)
+
+    // Обновляем состояние editedSection с новым массивом metricsFilters
+    setEditedSection((prevSection) => ({
+      ...prevSection,
+      metricsFilters: updatedFilters,
+    }))
   }
 
   useEffect(() => {
@@ -102,6 +144,7 @@ const SectionEditor = () => {
           setEditedSection(sectionData)
           setIsNewSection(false)
           console.log('Полученные опции из бэкенда:', sectionData)
+          setNotificationInterval(sectionData.notificationInterval || [])
           setSelectedOptions(sectionData.groupByOptions || [])
           setSelectedMetrics(sectionData.metrics || [])
         })
@@ -129,6 +172,7 @@ const SectionEditor = () => {
     ) {
       editedSection.groupByOptions = selectedOptions
       editedSection.metrics = selectedMetrics
+      editedSection.notificationInterval = notificationInterval
       if (isNewSection) {
         const formattedStartDate = editedSection.startDate.toISOString()
         const formattedEndDate = editedSection.endDate.toISOString()
@@ -147,6 +191,7 @@ const SectionEditor = () => {
           .then((response) => {
             console.log('Новая секция успешно создана', response.data)
             // После успешного создания, загрузите обновленный список секций
+
             loadSections()
             navigate('/dashboard')
           })
@@ -161,6 +206,7 @@ const SectionEditor = () => {
           .then((response) => {
             console.log('Секция успешно обновлена', response.data.section)
             // После успешного обновления, загрузите обновленный список секций
+
             loadSections()
             navigate('/dashboard')
           })
@@ -265,16 +311,12 @@ const SectionEditor = () => {
                 value={selectedOption}
                 onChange={(e) => setSelectedOption(e.target.value)}
               >
-                <option className="option-item" value="">
-                  Select an metric (Array of metrics available to group report
-                  data. MIN: 1 metric, MAX: 10 metrics)
-                </option>
-                <option className="option-item" value="trackingField4">
-                  campaignId
-                </option>
-                <option className="option-item" value="clickID">
-                  clickID
-                </option>
+                <option value="">Select a metric</option>
+                {groupByOptions.map((option, index) => (
+                  <option key={index} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
               <button className="add-button" onClick={handleAddOption}>
                 Add
@@ -283,17 +325,23 @@ const SectionEditor = () => {
             <div>
               <h2 className="font-bold">Selected GroupBy Metrics:</h2>
               <ul className="options-list">
-                {selectedOptions.map((option, index) => (
-                  <li className="option-item" key={index}>
-                    {option}{' '}
-                    <button
-                      className="remove-button"
-                      onClick={() => handleRemoveOption(option)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </li>
-                ))}
+                {selectedOptions.map((option, index) => {
+                  const selectedOptionLabel = groupByOptions.find(
+                    (item) => item.value === option
+                  )?.label
+
+                  return (
+                    <li className="option-item" key={index}>
+                      {selectedOptionLabel || option}{' '}
+                      <button
+                        className="remove-button"
+                        onClick={() => handleRemoveOption(option)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           </div>
@@ -305,19 +353,12 @@ const SectionEditor = () => {
                 value={selectedMetric}
                 onChange={(e) => setSelectedMetric(e.target.value)}
               >
-                <option className="option-item" value="">
-                  Select metrics (Array of column names that will be generated
-                  in the report. MIN: 3 metrics)
-                </option>
-                <option className="option-item" value="trackingField4">
-                  campaignId
-                </option>
-                <option className="option-item" value="clickID">
-                  clickID
-                </option>
-                <option className="option-item" value="visits">
-                  visits
-                </option>
+                <option value="">Select a metric</option>
+                {metricOptions.map((option, index) => (
+                  <option key={index} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
               <button className="add-button" onClick={handleAddMetric}>
                 Add
@@ -326,17 +367,23 @@ const SectionEditor = () => {
             <div>
               <h2 className="font-bold">Selected Metrics:</h2>
               <ul className="options-list">
-                {selectedMetrics.map((option, index) => (
-                  <li className="option-item" key={index}>
-                    {option}{' '}
-                    <button
-                      className="remove-button"
-                      onClick={() => handleRemoveMetric(option)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </li>
-                ))}
+                {selectedMetrics.map((option, index) => {
+                  const selectedMetricLabel = metricOptions.find(
+                    (item) => item.value === option
+                  )?.label
+
+                  return (
+                    <li className="option-item" key={index}>
+                      {selectedMetricLabel || option}{' '}
+                      <button
+                        className="remove-button"
+                        onClick={() => handleRemoveMetric(option)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           </div>
@@ -367,8 +414,8 @@ const SectionEditor = () => {
               >
                 <option value="">Select a filter name</option>
                 {filterNameOptions.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
+                  <option key={index} value={option.value}>
+                    {option.label}
                   </option>
                 ))}
               </select>
@@ -408,22 +455,25 @@ const SectionEditor = () => {
                   {filter.filterValue}{' '}
                   <button
                     className="remove-button"
-                    onClick={() => {
-                      const updatedFilters =
-                        editedSection.metricsFilters.filter(
-                          (_, i) => i !== index
-                        )
-                      setEditedSection((prevSection) => ({
-                        ...prevSection,
-                        metricsFilters: updatedFilters,
-                      }))
-                    }}
+                    onClick={() => handleRemoveMetricsFilter(index)}
                   >
                     <FaTrash />
                   </button>
                 </li>
               ))}
             </ul>
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1">
+              Notification Interval (in minutes):
+            </label>
+            <input
+              type="number"
+              value={notificationInterval}
+              onChange={(e) => setNotificationInterval(e.target.value)}
+              className="w-20 p-2 border border-gray-300 rounded-md"
+              min="1"
+            />
           </div>
           <div className="mb-4">
             <label className="block mb-1">telegramId:</label>

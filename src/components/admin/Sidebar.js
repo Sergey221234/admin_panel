@@ -5,7 +5,7 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import '../../../src/index.css'
 
-const Sidebar = ({ handleLogout }) => {
+const Sidebar = () => {
   const sections = useSelector((state) => state.sidebar.sections)
   const dispatch = useDispatch()
 
