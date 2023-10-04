@@ -10,7 +10,11 @@ const Section = ({ handleLogout }) => {
       <Routes>
         <Route
           path="/"
-          element={<h1>Select a rule from the sidebar or create a new one.</h1>}
+          element={
+            <h1 className="centered-text">
+              Select a rule from the sidebar or create a new one.
+            </h1>
+          }
         />
         <Route path="/:sectionId" element={<SectionEditor />} />
         <Route path="/dashboard/new" element={<SectionEditor />} />
