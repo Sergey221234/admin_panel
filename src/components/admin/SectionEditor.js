@@ -8,6 +8,9 @@ import { useDispatch } from 'react-redux'
 import { updateSections } from '../../redux/sidebarSlice'
 import '../../../src/index.css'
 import { FaTrash } from 'react-icons/fa'
+import groupByOptions from '../../../src/data/groupByOptions'
+import metricOptions from '../../../src/data/metricOptions'
+import filterNameOptions from '../../../src/data/filterNameOptions'
 
 const SectionEditor = () => {
   const { sectionId } = useParams()
@@ -29,22 +32,6 @@ const SectionEditor = () => {
   const [filterValue, setFilterValue] = useState('')
 
   const [notificationInterval, setNotificationInterval] = useState(1)
-
-  const groupByOptions = [
-    { label: 'campaignId', value: 'trackingField4' },
-    { label: 'clickId', value: 'clickID' },
-  ]
-
-  const metricOptions = [
-    { label: 'campaignId', value: 'trackingField4' },
-    { label: 'clickId', value: 'clickID' },
-    { label: 'visits', value: 'visits' },
-  ]
-
-  const filterNameOptions = [
-    { label: 'campaignId', value: 'trackingField4' },
-    { label: 'visits', value: 'visits' },
-  ]
 
   const operatorOptions = ['=', '>', '<', '>=', '<=', 'in', 'like']
 
@@ -134,7 +121,7 @@ const SectionEditor = () => {
       setNotificationInterval('')
     } else {
       axios
-        .get(`http://localhost:4001/sections/${sectionId}`, {
+        .get(`https://backend-opal-chi.vercel.app/sections/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -166,10 +153,9 @@ const SectionEditor = () => {
       editedSection.title &&
       editedSection.startDate &&
       editedSection.endDate &&
-      // editedSection.groupBy &&
-      // editedSection.metrics &&
       editedSection.sortBy &&
-      editedSection.telegramId
+      editedSection.telegramId &&
+      notificationInterval
     ) {
       editedSection.groupByOptions = selectedOptions
       editedSection.metrics = selectedMetrics
@@ -179,7 +165,7 @@ const SectionEditor = () => {
         const formattedEndDate = editedSection.endDate.toISOString()
         axios
           .post(
-            'http://localhost:4001/create',
+            'https://backend-opal-chi.vercel.app/create',
             {
               ...editedSection,
               startDate: formattedStartDate,
@@ -201,9 +187,13 @@ const SectionEditor = () => {
           })
       } else {
         axios
-          .put(`http://localhost:4001/section/${sectionId}`, editedSection, {
-            withCredentials: true,
-          })
+          .put(
+            `https://backend-opal-chi.vercel.app/section/${sectionId}`,
+            editedSection,
+            {
+              withCredentials: true,
+            }
+          )
           .then((response) => {
             console.log('Секция успешно обновлена', response.data.section)
             // После успешного обновления, загрузите обновленный список секций
@@ -221,7 +211,7 @@ const SectionEditor = () => {
   const handleDeleteSection = () => {
     if (sectionId) {
       axios
-        .delete(`http://localhost:4001/delete/${sectionId}`, {
+        .delete(`https://backend-opal-chi.vercel.app/delete/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -239,9 +229,12 @@ const SectionEditor = () => {
 
   const loadSections = async () => {
     try {
-      const response = await axios.get('http://localhost:4001/sections', {
-        withCredentials: true,
-      })
+      const response = await axios.get(
+        'https://backend-opal-chi.vercel.app/sections',
+        {
+          withCredentials: true,
+        }
+      )
       const loadedSections = response.data.sections
 
       // Обновите состояние хранилища Redux с помощью dispatch
@@ -307,6 +300,7 @@ const SectionEditor = () => {
               <label className="block mb-1 font-bold">
                 Select GroupBy Metrics:
               </label>
+              <span>MIN: 1 metric, MAX: 10 metrics</span>
               <select
                 className="select-input"
                 value={selectedOption}
@@ -349,6 +343,7 @@ const SectionEditor = () => {
           <div className="gradient-box2 mt-2">
             <div className="mb-4">
               <label className="block mb-1 font-bold">Select Metrics:</label>
+              <span>MIN: 3 metrics</span>
               <select
                 className="select-input"
                 value={selectedMetric}
@@ -481,6 +476,11 @@ const SectionEditor = () => {
               className="w-20 p-2 border border-gray-300 rounded-md"
               min="1"
             />
+            {!notificationInterval && (
+              <p className="text-red-500">
+                Поле Notification Interval не может быть пустым
+              </p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block mb-1">telegramId:</label>
