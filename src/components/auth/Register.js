@@ -26,7 +26,10 @@ const Register = () => {
     try {
       const response = await axios.post(
         'https://backend-opal-chi.vercel.app/register',
-        formData
+        formData,
+        {
+          withCredentials: true,
+        }
       )
       if (response) {
         setSuccessMessage(

@@ -24,13 +24,9 @@ const Login = ({ setIsAuthenticated }) => {
     e.preventDefault()
 
     try {
-      const response = await axios.post(
-        'https://backend-opal-chi.vercel.app/login',
-        formData,
-        {
-          withCredentials: true,
-        }
-      )
+      await axios.post('https://backend-opal-chi.vercel.app/login', formData, {
+        withCredentials: true,
+      })
 
       setIsAuthenticated(true)
       localStorage.setItem('isAuthenticated', 'true')
