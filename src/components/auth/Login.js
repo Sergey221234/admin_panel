@@ -24,7 +24,7 @@ const Login = ({ setIsAuthenticated }) => {
     e.preventDefault()
 
     try {
-      await axios.post('http://localhost:4001/login', formData, {
+      await axios.post('https://backend-opal-chi.vercel.app/login', formData, {
         withCredentials: true,
       })
 

@@ -121,7 +121,7 @@ const SectionEditor = () => {
       setNotificationInterval('')
     } else {
       axios
-        .get(`http://localhost:4001/sections/${sectionId}`, {
+        .get(`https://backend-opal-chi.vercel.app/sections/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -165,7 +165,7 @@ const SectionEditor = () => {
         const formattedEndDate = editedSection.endDate.toISOString()
         axios
           .post(
-            'http://localhost:4001/create',
+            'https://backend-opal-chi.vercel.app/create',
             {
               ...editedSection,
               startDate: formattedStartDate,
@@ -187,9 +187,13 @@ const SectionEditor = () => {
           })
       } else {
         axios
-          .put(`http://localhost:4001/section/${sectionId}`, editedSection, {
-            withCredentials: true,
-          })
+          .put(
+            `https://backend-opal-chi.vercel.app/section/${sectionId}`,
+            editedSection,
+            {
+              withCredentials: true,
+            }
+          )
           .then((response) => {
             console.log('Секция успешно обновлена', response.data.section)
             // После успешного обновления, загрузите обновленный список секций
@@ -207,7 +211,7 @@ const SectionEditor = () => {
   const handleDeleteSection = () => {
     if (sectionId) {
       axios
-        .delete(`http://localhost:4001/delete/${sectionId}`, {
+        .delete(`https://backend-opal-chi.vercel.app/delete/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -225,9 +229,12 @@ const SectionEditor = () => {
 
   const loadSections = async () => {
     try {
-      const response = await axios.get('http://localhost:4001/sections', {
-        withCredentials: true,
-      })
+      const response = await axios.get(
+        'https://backend-opal-chi.vercel.app/sections',
+        {
+          withCredentials: true,
+        }
+      )
       const loadedSections = response.data.sections
 
       // Обновите состояние хранилища Redux с помощью dispatch
