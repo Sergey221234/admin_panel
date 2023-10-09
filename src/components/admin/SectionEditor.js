@@ -121,7 +121,7 @@ const SectionEditor = () => {
       setNotificationInterval('')
     } else {
       axios
-        .get(`https://app.n2stools.com/sections/${sectionId}`, {
+        .get(`http://localhost:4001/sections/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -165,7 +165,7 @@ const SectionEditor = () => {
         const formattedEndDate = editedSection.endDate.toISOString()
         axios
           .post(
-            'https://app.n2stools.com/create',
+            'http://localhost:4001/create',
             {
               ...editedSection,
               startDate: formattedStartDate,
@@ -187,7 +187,7 @@ const SectionEditor = () => {
           })
       } else {
         axios
-          .put(`https://app.n2stools.com/section/${sectionId}`, editedSection, {
+          .put(`http://localhost:4001/section/${sectionId}`, editedSection, {
             withCredentials: true,
           })
           .then((response) => {
@@ -207,7 +207,7 @@ const SectionEditor = () => {
   const handleDeleteSection = () => {
     if (sectionId) {
       axios
-        .delete(`https://app.n2stools.com/delete/${sectionId}`, {
+        .delete(`http://localhost:4001/delete/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -225,7 +225,7 @@ const SectionEditor = () => {
 
   const loadSections = async () => {
     try {
-      const response = await axios.get('https://app.n2stools.com/sections', {
+      const response = await axios.get('http://localhost:4001/sections', {
         withCredentials: true,
       })
       const loadedSections = response.data.sections
