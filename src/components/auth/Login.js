@@ -24,7 +24,7 @@ const Login = ({ setIsAuthenticated }) => {
     e.preventDefault()
 
     try {
-      await axios.post('https://backend-opal-chi.vercel.app/login', formData, {
+      await axios.post('https://app.n2stools.com/login', formData, {
         withCredentials: true,
       })
 
