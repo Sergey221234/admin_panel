@@ -25,7 +25,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        'https://app.n2stools.com/register',
+        '1https://app.n2stools.com/register',
         formData
       )
       if (response) {
