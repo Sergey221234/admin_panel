@@ -121,7 +121,7 @@ const SectionEditor = () => {
       setNotificationInterval('')
     } else {
       axios
-        .get(`1https://app.n2stools.com/sections/${sectionId}`, {
+        .get(`https://app.n2stools.com/sections/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
