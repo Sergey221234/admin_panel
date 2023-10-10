@@ -24,7 +24,7 @@ const Login = ({ setIsAuthenticated }) => {
     e.preventDefault()
 
     try {
-      await axios.post('https://app.n2stools.com/login', formData, {
+      await axios.post('http://localhost:4001/login', formData, {
         withCredentials: true,
       })
 
