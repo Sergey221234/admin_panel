@@ -1,5 +1,6 @@
 const filterNameOptions = [
-  { label: 'campaignId', value: 'trackingField4' },
+  { label: 'campaignId', value: 'campaignID' },
+  { label: 'campaignName', value: 'campaignName' },
   { label: 'locationRegion', value: 'locationRegion' },
   { label: 'visitID', value: 'visitID' },
   { label: 'externalID', value: 'externalID' },
@@ -136,7 +137,6 @@ const filterNameOptions = [
   { label: 'customRevenue19', value: 'customRevenue19' },
   { label: 'customRevenue20', value: 'customRevenue20' },
   { label: 'trafficSourceCostEstimated', value: 'trafficSourceCostEstimated' },
-  { label: 'campaignName', value: 'campaignName' },
   { label: 'campaignCreatedAt', value: 'campaignCreatedAt' },
   { label: 'campaignUpdatedAt', value: 'campaignUpdatedAt' },
   { label: 'campaignNotes', value: 'campaignNotes' },

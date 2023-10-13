@@ -8,9 +8,13 @@ import { useDispatch } from 'react-redux'
 import { updateSections } from '../../redux/sidebarSlice'
 import '../../../src/index.css'
 import { FaTrash } from 'react-icons/fa'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 import groupByOptions from '../../../src/data/groupByOptions'
 import metricOptions from '../../../src/data/metricOptions'
 import filterNameOptions from '../../../src/data/filterNameOptions'
+import sortByDataOptions from '../../../src/data/sortByOptions'
 
 const SectionEditor = () => {
   const { sectionId } = useParams()
@@ -33,8 +37,52 @@ const SectionEditor = () => {
 
   const [notificationInterval, setNotificationInterval] = useState(1)
 
-  const operatorOptions = ['=', '>', '<', '>=', '<=', 'in', 'like']
+  const [sortByOptions, setSortByOptions] = useState([])
+  const [selectedSortBy, setSelectedSortBy] = useState('')
 
+  const operatorOptions = [
+    {
+      label: 'равно =',
+      operator: '=',
+    },
+    {
+      label: 'больше >',
+      operator: '>',
+    },
+    {
+      label: 'меньше <',
+      operator: '<',
+    },
+    {
+      label: 'равно или больше >=',
+      operator: '>=',
+    },
+    {
+      label: 'равно или меньше <=',
+      operator: '<=',
+    },
+    {
+      label: 'в in',
+      operator: 'in',
+    },
+    {
+      label: 'как like',
+      operator: 'like',
+    },
+  ]
+
+  const sortByWrong = () => {
+    toast.error('🦄 Wow so easy!', {
+      position: 'top-right',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'colored',
+    })
+  }
   const handleAddOption = () => {
     if (selectedOption && !selectedOptions.includes(selectedOption)) {
       setSelectedOptions([...selectedOptions, selectedOption])
@@ -70,8 +118,12 @@ const SectionEditor = () => {
       )
 
       let parsedFilterValue = filterValue
-      if (selectedFilterName === 'visits') {
+      if (selectedFilterName === 'visits' || selectedFilterName === 'roi') {
         parsedFilterValue = parseInt(filterValue, 10)
+      }
+
+      if (filterOperator === 'in') {
+        parsedFilterValue = filterValue.split(',').map((value) => value.trim())
       }
 
       const newFilter = {
@@ -105,6 +157,30 @@ const SectionEditor = () => {
     }))
   }
 
+  const handleAddSortBy = () => {
+    if (selectedSortBy && !sortByOptions.includes(selectedSortBy)) {
+      setSortByOptions([...sortByOptions, selectedSortBy]) // Обновляем SortBy как строку, а не как массив
+      setSelectedSortBy('')
+    } else if (!selectedSortBy) {
+      toast.error('Выберите значение в поле SortBy.')
+    } else {
+      toast.error('Это значение SortBy уже добавлено.')
+    }
+  }
+
+  const handleRemoveSortBy = (index) => {
+    const updatedSortByOptions = [...sortByOptions]
+    updatedSortByOptions.splice(index, 1)
+    setSortByOptions(updatedSortByOptions)
+  }
+
+  function getSortByLabel(value) {
+    const selectedOption = sortByDataOptions.find(
+      (option) => option.value === value
+    )
+    return selectedOption ? selectedOption.label : value
+  }
+
   useEffect(() => {
     if (sectionId === 'new') {
       setIsNewSection(true)
@@ -113,12 +189,13 @@ const SectionEditor = () => {
         telegramId: '',
         startDate: null,
         endDate: null,
-        sortBy: '',
+        // sortBy: '',
         metricsFilters: [],
       })
       setSelectedOptions([])
       setSelectedMetrics([])
       setNotificationInterval('')
+      setSortByOptions([])
     } else {
       axios
         .get(`https://app.n2stools.com/sections/${sectionId}`, {
@@ -135,6 +212,7 @@ const SectionEditor = () => {
           setNotificationInterval(sectionData.notificationInterval || [])
           setSelectedOptions(sectionData.groupByOptions || [])
           setSelectedMetrics(sectionData.metrics || [])
+          setSortByOptions([sectionData.sortBy] || [])
         })
         .catch((error) => {
           console.error('Ошибка при загрузке секции', error)
@@ -148,6 +226,7 @@ const SectionEditor = () => {
   }
 
   const handleSaveSection = () => {
+    console.log((editedSection.sortBy = sortByOptions))
     if (
       editedSection &&
       editedSection.title &&
@@ -160,6 +239,7 @@ const SectionEditor = () => {
       editedSection.groupByOptions = selectedOptions
       editedSection.metrics = selectedMetrics
       editedSection.notificationInterval = notificationInterval
+      editedSection.sortBy = sortByOptions[0]
       if (isNewSection) {
         const formattedStartDate = editedSection.startDate.toISOString()
         const formattedEndDate = editedSection.endDate.toISOString()
@@ -239,6 +319,7 @@ const SectionEditor = () => {
 
   return (
     <div className="w-full section-editor-container">
+      <ToastContainer />
       <h1>Rule Editor</h1>
       {selectedSection || isNewSection ? (
         <div>
@@ -255,6 +336,7 @@ const SectionEditor = () => {
               <p className="text-red-500">Поле Name не может быть пустым</p>
             )}
           </div>
+          <div className="m">Интервал исследование:</div>
           <div className="mb-4 flex">
             <div className="mr-2">
               <label className="block mb-1">Start Date and Time:</label>
@@ -376,8 +458,47 @@ const SectionEditor = () => {
               </ul>
             </div>
           </div>
-
           <div className="mb-4">
+            <label className="block mb-1 font-bold">Select SortBy:</label>
+            <span>
+              Name of the metric you want to sort by your data. NOTE: Column
+              selected to sort should be inside metrics
+            </span>
+            <select
+              className="select-input"
+              value={selectedSortBy}
+              onChange={(e) => setSelectedSortBy(e.target.value)}
+            >
+              <option value="">Select a metric</option>
+              {sortByDataOptions.map((option, index) => (
+                <option key={index} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <button className="add-button" onClick={handleAddSortBy}>
+              Add SortBy
+            </button>
+          </div>
+          <div>
+            <h2 className="font-bold">Selected SortBy:</h2>
+            <ul className="options-list">
+              {sortByOptions.map((option, index) => (
+                <li className="option-item" key={index}>
+                  {getSortByLabel(option)}{' '}
+                  {/* Используйте функцию для отображения label */}
+                  <button
+                    className="remove-button"
+                    onClick={() => handleRemoveSortBy(index)}
+                  >
+                    <FaTrash />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* <div className="mb-4">
             <label className="block mb-1">sortBy:</label>
             <input
               value={editedSection.sortBy}
@@ -390,7 +511,7 @@ const SectionEditor = () => {
             {!editedSection.sortBy && (
               <p className="text-red-500">Поле sortBy не может быть пустым</p>
             )}
-          </div>
+          </div> */}
           <div className="gradient-box">
             <h2 className="font-bold">Select Metrics Filters:</h2>
             <span>MIN: 1 metric</span>
@@ -418,8 +539,8 @@ const SectionEditor = () => {
               >
                 <option value="">Select an operator</option>
                 {operatorOptions.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
+                  <option key={index} value={option.operator}>
+                    {option.label}
                   </option>
                 ))}
               </select>
@@ -460,7 +581,7 @@ const SectionEditor = () => {
           </div>
           <div className="mb-4">
             <label className="block mb-1">
-              Notification Interval (in minutes):
+              Интервал оповещения (в минутах):
             </label>
             <input
               type="number"
@@ -471,7 +592,7 @@ const SectionEditor = () => {
             />
             {!notificationInterval && (
               <p className="text-red-500">
-                Поле Notification Interval не может быть пустым
+                Поле Интервал оповещения не может быть пустым
               </p>
             )}
           </div>

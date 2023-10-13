@@ -1,5 +1,5 @@
 const groupByOptions = [
-  { label: 'campaignId', value: 'trackingField4' },
+  { label: 'campaignId', value: 'campaignID' },
   { label: 'clickId', value: 'clickID' },
   { label: 'locationRegion', value: 'locationRegion' },
   { label: 'visitID', value: 'visitID' },

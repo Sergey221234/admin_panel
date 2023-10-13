@@ -1,4 +1,4 @@
-const metricOptions = [
+const sortByOptions = [
   { label: 'campaignId', value: 'campaignID' },
   { label: 'campaignName', value: 'campaignName' },
   { label: 'locationRegion', value: 'locationRegion' },
@@ -174,4 +174,4 @@ const metricOptions = [
   { label: 'flowCreatedAt', value: 'flowCreatedAt' },
   { label: 'flowUpdatedAt', value: 'flowUpdatedAt' },
 ]
-export default metricOptions
+export default sortByOptions
