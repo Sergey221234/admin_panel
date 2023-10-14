@@ -15,6 +15,7 @@ import groupByOptions from '../../../src/data/groupByOptions'
 import metricOptions from '../../../src/data/metricOptions'
 import filterNameOptions from '../../../src/data/filterNameOptions'
 import sortByDataOptions from '../../../src/data/sortByOptions'
+import timezone from '../../../src/data/timezoneOptions'
 
 const SectionEditor = () => {
   const { sectionId } = useParams()
@@ -39,6 +40,8 @@ const SectionEditor = () => {
 
   const [sortByOptions, setSortByOptions] = useState([])
   const [selectedSortBy, setSelectedSortBy] = useState('')
+
+  const [selectedTimezone, setSelectedTimezone] = useState('')
 
   const operatorOptions = [
     {
@@ -189,16 +192,16 @@ const SectionEditor = () => {
         telegramId: '',
         startDate: null,
         endDate: null,
-        // sortBy: '',
         metricsFilters: [],
       })
       setSelectedOptions([])
       setSelectedMetrics([])
       setNotificationInterval('')
       setSortByOptions([])
+      setSelectedTimezone('')
     } else {
       axios
-        .get(`https://app.n2stools.com/sections/${sectionId}`, {
+        .get(`http://localhost:4001/sections/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -213,6 +216,7 @@ const SectionEditor = () => {
           setSelectedOptions(sectionData.groupByOptions || [])
           setSelectedMetrics(sectionData.metrics || [])
           setSortByOptions([sectionData.sortBy] || [])
+          setSelectedTimezone(sectionData.timezone || [])
         })
         .catch((error) => {
           console.error('Ошибка при загрузке секции', error)
@@ -240,12 +244,13 @@ const SectionEditor = () => {
       editedSection.metrics = selectedMetrics
       editedSection.notificationInterval = notificationInterval
       editedSection.sortBy = sortByOptions[0]
+      editedSection.timezone = selectedTimezone
       if (isNewSection) {
         const formattedStartDate = editedSection.startDate.toISOString()
         const formattedEndDate = editedSection.endDate.toISOString()
         axios
           .post(
-            'https://app.n2stools.com/create',
+            'http://localhost:4001/create',
             {
               ...editedSection,
               startDate: formattedStartDate,
@@ -267,7 +272,7 @@ const SectionEditor = () => {
           })
       } else {
         axios
-          .put(`https://app.n2stools.com/section/${sectionId}`, editedSection, {
+          .put(`http://localhost:4001/section/${sectionId}`, editedSection, {
             withCredentials: true,
           })
           .then((response) => {
@@ -287,7 +292,7 @@ const SectionEditor = () => {
   const handleDeleteSection = () => {
     if (sectionId) {
       axios
-        .delete(`https://app.n2stools.com/delete/${sectionId}`, {
+        .delete(`http://localhost:4001/delete/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -305,7 +310,7 @@ const SectionEditor = () => {
 
   const loadSections = async () => {
     try {
-      const response = await axios.get('https://app.n2stools.com/sections', {
+      const response = await axios.get('http://localhost:4001/sections', {
         withCredentials: true,
       })
       const loadedSections = response.data.sections
@@ -369,6 +374,21 @@ const SectionEditor = () => {
                 </p>
               )}
             </div>
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1">Select Timezone:</label>
+            <select
+              className="select-input"
+              value={selectedTimezone}
+              onChange={(e) => setSelectedTimezone(e.target.value)}
+            >
+              <option value="">Select a timezone</option>
+              {timezone.map((option, index) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="gradient-box">
             <div className="mb-4 gradient-box">
