@@ -201,7 +201,7 @@ const SectionEditor = () => {
       setSelectedTimezone('')
     } else {
       axios
-        .get(`https://app.n2stools.com/api/sections/${sectionId}`, {
+        .get(`https://dash.n2stools.com/api/sections/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -250,7 +250,7 @@ const SectionEditor = () => {
         const formattedEndDate = editedSection.endDate.toISOString()
         axios
           .post(
-            'https://app.n2stools.com/api/create',
+            'https://dash.n2stools.com/api/create',
             {
               ...editedSection,
               startDate: formattedStartDate,
@@ -273,7 +273,7 @@ const SectionEditor = () => {
       } else {
         axios
           .put(
-            `https://app.n2stools.com/api/section/${sectionId}`,
+            `https://dash.n2stools.com/api/section/${sectionId}`,
             editedSection,
             {
               withCredentials: true,
@@ -296,7 +296,7 @@ const SectionEditor = () => {
   const handleDeleteSection = () => {
     if (sectionId) {
       axios
-        .delete(`https://app.n2stools.com/api/delete/${sectionId}`, {
+        .delete(`https://dash.n2stools.com/api/delete/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -315,7 +315,7 @@ const SectionEditor = () => {
   const loadSections = async () => {
     try {
       const response = await axios.get(
-        'https://app.n2stools.com/api/sections',
+        'https://dash.n2stools.com/api/sections',
         {
           withCredentials: true,
         }

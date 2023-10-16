@@ -13,7 +13,7 @@ const Sidebar = ({ handleLogout }) => {
     const loadSections = async () => {
       try {
         const response = await axios.get(
-          'https://app.n2stools.com/api/sections',
+          'https://dash.n2stools.com/api/sections',
           {
             withCredentials: true,
           }
