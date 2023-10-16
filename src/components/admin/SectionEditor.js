@@ -121,8 +121,13 @@ const SectionEditor = () => {
       )
 
       let parsedFilterValue = filterValue
-      if (selectedFilterName === 'visits' || selectedFilterName === 'roi') {
+      if (
+        selectedFilterName === 'visits' ||
+        selectedFilterName === 'roi' ||
+        selectedFilterName === 'dynamicPayout'
+      ) {
         parsedFilterValue = parseInt(filterValue, 10)
+        parsedFilterValue = parseFloat(filterValue)
       }
 
       if (filterOperator === 'in') {
