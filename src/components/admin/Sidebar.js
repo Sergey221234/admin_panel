@@ -12,7 +12,7 @@ const Sidebar = ({ handleLogout }) => {
   useEffect(() => {
     const loadSections = async () => {
       try {
-        const response = await axios.get('http://localhost:4001/sections', {
+        const response = await axios.get('https://app.n2stools.com/sections', {
           withCredentials: true,
         })
         const loadedSections = response.data.sections
