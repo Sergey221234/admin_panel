@@ -201,7 +201,7 @@ const SectionEditor = () => {
       setSelectedTimezone('')
     } else {
       axios
-        .get(`https://app.n2stools.com/sections/${sectionId}`, {
+        .get(`https://app.n2stools.com/api/sections/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -250,7 +250,7 @@ const SectionEditor = () => {
         const formattedEndDate = editedSection.endDate.toISOString()
         axios
           .post(
-            'https://app.n2stools.com/create',
+            'https://app.n2stools.com/api/create',
             {
               ...editedSection,
               startDate: formattedStartDate,
@@ -272,9 +272,13 @@ const SectionEditor = () => {
           })
       } else {
         axios
-          .put(`https://app.n2stools.com/section/${sectionId}`, editedSection, {
-            withCredentials: true,
-          })
+          .put(
+            `https://app.n2stools.com/api/section/${sectionId}`,
+            editedSection,
+            {
+              withCredentials: true,
+            }
+          )
           .then((response) => {
             console.log('Секция успешно обновлена', response.data.section)
             // После успешного обновления, загрузите обновленный список секций
@@ -292,7 +296,7 @@ const SectionEditor = () => {
   const handleDeleteSection = () => {
     if (sectionId) {
       axios
-        .delete(`https://app.n2stools.com/delete/${sectionId}`, {
+        .delete(`https://app.n2stools.com/api/delete/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -310,9 +314,12 @@ const SectionEditor = () => {
 
   const loadSections = async () => {
     try {
-      const response = await axios.get('https://app.n2stools.com/sections', {
-        withCredentials: true,
-      })
+      const response = await axios.get(
+        'https://app.n2stools.com/api/sections',
+        {
+          withCredentials: true,
+        }
+      )
       const loadedSections = response.data.sections
 
       // Обновите состояние хранилища Redux с помощью dispatch
