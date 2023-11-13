@@ -25,7 +25,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        'https://dash.n2stools.com/api/register',
+        'http://localhost:4001/register',
         formData
       )
       if (response) {

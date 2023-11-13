@@ -12,12 +12,9 @@ const Sidebar = ({ handleLogout }) => {
   useEffect(() => {
     const loadSections = async () => {
       try {
-        const response = await axios.get(
-          'https://dash.n2stools.com/api/sections',
-          {
-            withCredentials: true,
-          }
-        )
+        const response = await axios.get('http://localhost:4001/sections', {
+          withCredentials: true,
+        })
         const loadedSections = response.data.sections
 
         // Обновление состояния хранилища Redux с помощью dispatch

@@ -125,7 +125,8 @@ const SectionEditor = () => {
         selectedFilterName === 'visits' ||
         selectedFilterName === 'roi' ||
         selectedFilterName === 'dynamicPayout' ||
-        selectedFilterName === 'profit'
+        selectedFilterName === 'profit' ||
+        selectedFilterName === 'conversions'
       ) {
         parsedFilterValue = parseInt(filterValue, 10)
         parsedFilterValue = parseFloat(filterValue)
@@ -207,7 +208,7 @@ const SectionEditor = () => {
       setSelectedTimezone('')
     } else {
       axios
-        .get(`https://dash.n2stools.com/api/sections/${sectionId}`, {
+        .get(`http://localhost:4001/sections/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -256,7 +257,7 @@ const SectionEditor = () => {
         const formattedEndDate = editedSection.endDate.toISOString()
         axios
           .post(
-            'https://dash.n2stools.com/api/create',
+            'http://localhost:4001/create',
             {
               ...editedSection,
               startDate: formattedStartDate,
@@ -278,13 +279,9 @@ const SectionEditor = () => {
           })
       } else {
         axios
-          .put(
-            `https://dash.n2stools.com/api/section/${sectionId}`,
-            editedSection,
-            {
-              withCredentials: true,
-            }
-          )
+          .put(`http://localhost:4001/section/${sectionId}`, editedSection, {
+            withCredentials: true,
+          })
           .then((response) => {
             console.log('Секция успешно обновлена', response.data.section)
             // После успешного обновления, загрузите обновленный список секций
@@ -302,7 +299,7 @@ const SectionEditor = () => {
   const handleDeleteSection = () => {
     if (sectionId) {
       axios
-        .delete(`https://dash.n2stools.com/api/delete/${sectionId}`, {
+        .delete(`http://localhost:4001/delete/${sectionId}`, {
           withCredentials: true,
         })
         .then((response) => {
@@ -320,12 +317,9 @@ const SectionEditor = () => {
 
   const loadSections = async () => {
     try {
-      const response = await axios.get(
-        'https://dash.n2stools.com/api/sections',
-        {
-          withCredentials: true,
-        }
-      )
+      const response = await axios.get('http://localhost:4001/sections', {
+        withCredentials: true,
+      })
       const loadedSections = response.data.sections
 
       // Обновите состояние хранилища Redux с помощью dispatch

@@ -1,5 +1,7 @@
 const groupByOptions = [
   { label: 'campaignId', value: 'campaignID' },
+  { label: 'offerID', value: 'offerID' },
+  { label: 'param1', value: 'param1' },
   { label: 'clickId', value: 'clickID' },
   { label: 'locationRegion', value: 'locationRegion' },
   { label: 'visitID', value: 'visitID' },
@@ -10,7 +12,6 @@ const groupByOptions = [
   { label: 'deviceOsVersion', value: 'deviceOsVersion' },
   { label: 'deviceModel', value: 'deviceModel' },
   { label: 'deviceMainLanguage', value: 'deviceMainLanguage' },
-  { label: 'offerID', value: 'offerID' },
   { label: 'landingID', value: 'landingID' },
   { label: 'connectionISP', value: 'connectionISP' },
   { label: 'connectionIP', value: 'connectionIP' },
@@ -52,7 +53,6 @@ const groupByOptions = [
   { label: 'trackingField18', value: 'trackingField18' },
   { label: 'trackingField19', value: 'trackingField19' },
   { label: 'trackingField20', value: 'trackingField20' },
-  { label: 'param1', value: 'param1' },
   { label: 'param2', value: 'param2' },
   { label: 'param3', value: 'param3' },
   { label: 'param4', value: 'param4' },

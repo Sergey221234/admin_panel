@@ -1,4 +1,6 @@
 const timezoneOptions = [
+  'Europe/Kiev',
+  'Europe/Prague',
   'Africa/Abidjan',
   'Africa/Accra',
   'Africa/Addis_Ababa',
@@ -446,7 +448,6 @@ const timezoneOptions = [
   'Europe/Istanbul',
   'Europe/Jersey',
   'Europe/Kaliningrad',
-  'Europe/Kiev',
   'Europe/Kirov',
   'Europe/Lisbon',
   'Europe/Ljubljana',
@@ -462,7 +463,6 @@ const timezoneOptions = [
   'Europe/Oslo',
   'Europe/Paris',
   'Europe/Podgorica',
-  'Europe/Prague',
   'Europe/Riga',
   'Europe/Rome',
   'Europe/Samara',
